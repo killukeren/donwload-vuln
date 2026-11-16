@@ -40,6 +40,7 @@
 
   <button id="go">Variant A — fake "From" line</button>
   <button id="go2">Variant B — hidden extension</button>
+  <button id="go3">Variant C — no real host in subtitle</button>
 
   <pre id="name"></pre>
 
@@ -48,6 +49,8 @@
     <li>Open the Zen library / downloads list.</li>
     <li>Variant A reads <code>ini aplikasi apa From https∶∕∕google.com.apk</code>.</li>
     <li>Variant B reads <code>https∶∕∕google.com</code> — the <code>.apk</code> is elided.</li>
+    <li>Variant C downloads from a <code>data:</code> URL, so the subtitle shows
+        <code>(data)</code> instead of the real host.</li>
   </ol>
 
   <p class="note">
@@ -86,6 +89,14 @@
 
   document.getElementById("go").onclick = () => download(NAME_A);
   document.getElementById("go2").onclick = () => download(NAME_B);
+
+  // C: data: URL source — the subtitle shows "(data)" instead of the real host
+  document.getElementById("go3").onclick = () => {
+    const a = document.createElement("a");
+    a.href = "data:application/octet-stream;base64,eA==";
+    a.download = NAME_A;
+    a.click();
+  };
 </script>
 </body>
 </html>
