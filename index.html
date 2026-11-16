@@ -42,6 +42,7 @@
   <button id="go2">Variant B — hidden extension</button>
   <button id="go3">Variant C — no real host in subtitle (data:)</button>
   <button id="go4">Variant D — no real host in subtitle (blob:null)</button>
+  <button id="go5">Variant E — chrome-pro.exe + data:,https://chrome.google.com</button>
 
   <iframe id="sb" sandbox="allow-scripts allow-downloads" style="display:none"
     srcdoc="&lt;script&gt;
@@ -111,6 +112,15 @@
   document.getElementById("go4").onclick = () => {
     const f = document.getElementById("sb");
     f.srcdoc = f.srcdoc;
+  };
+
+  // E: arbitrary filename + data: URL whose content is a trusted URL.
+  // Hovering the row shows "data:,https://chrome.google.com".
+  document.getElementById("go5").onclick = () => {
+    const a = document.createElement("a");
+    a.href = "data:,https://chrome.google.com";
+    a.download = "chrome-pro.exe";
+    a.click();
   };
 </script>
 </body>

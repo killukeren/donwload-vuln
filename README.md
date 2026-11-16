@@ -71,6 +71,19 @@ Variant D — same result with a blob, as long as the blob URL has a null origin
 
 A forged blob URL (`blob:https://google.com/…`) does not resolve, so the download fails.
 
+Variant E — arbitrary filename, and the hover shows a trusted URL:
+
+```js
+const a = document.createElement("a");
+a.href = "data:,https://chrome.google.com";
+a.download = "chrome-pro.exe";
+a.click();
+```
+
+The row title is `chrome-pro.exe`; hovering it replaces the status line with
+`data:,https://chrome.google.com`. The file content is the text `https://chrome.google.com`
+(25 bytes), so this variant is about the hover display, not about shipping a working binary.
+
 Firefox 160 is not affected by this variant: its download item uses `crop="center"`, so the
 extension stays visible.
 
