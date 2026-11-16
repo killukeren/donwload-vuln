@@ -93,7 +93,7 @@
   // C: data: URL source — the subtitle shows "(data)" instead of the real host
   document.getElementById("go3").onclick = () => {
     const a = document.createElement("a");
-    a.href = "data:application/octet-stream;base64,eA==";
+    a.href = "data:text/html,<b>x</b>";
     a.download = NAME_A;
     a.click();
   };

