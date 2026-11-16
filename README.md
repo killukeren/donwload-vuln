@@ -1,37 +1,31 @@
-# Zen Browser — download origin spoof
+# Poc Download Spoofing
 
-PoC for Zen Browser 1.24.2b.
-
-The download list shows the page-controlled filename as the entry title. The title uses
-`text-overflow: ellipsis`, which hides the tail. Unicode lookalikes for `:` and `/` survive
-Firefox's filename sanitization, so a downloaded `.apk` can look like it came from
-`google.com`.
+Zen Browser 1.24.2b — the download list shows a page-controlled source URL and hides the
+real extension.
 
 ## Payload
 
 ```js
-const name = "https\u2236\u2215\u2215google.com" + "\u2800".repeat(40) + ".apk";
+const a = document.createElement("a");
+a.href = "data:,https://chrome.google.com";
+a.download = "chrome-pro.exe";
+a.click();
 ```
 
-- `U+2236` RATIO — looks like `:`
-- `U+2215` DIVISION SLASH — looks like `/`
-- `U+2800` BRAILLE PATTERN BLANK — invisible filler, pushes `.apk` past the ellipsis
+The row title is `chrome-pro.exe`. Hovering it replaces the status line with
+`data:,https://chrome.google.com`, so the source reads as a trusted Chrome URL.
 
-## Result
+## Why it works
 
-| | |
-|---|---|
-| Saved filename | `https∶∕∕google.com` + 40×U+2800 + `.apk` |
-| Visible title | `https∶∕∕google.com` + blanks |
-| Hidden | `.apk` |
+- `ZenLibraryDownloadsSection.mjs` renders the source URL with `#formatUrl()`, which only
+  strips `https://` and `www.` — a `data:` URL is shown verbatim.
+- `zen-library.css` hides `.zen-library-download-url` and shows it on `:hover`, replacing
+  the status line.
+- The title uses `text-overflow: ellipsis`, so a long filename loses its tail (the real
+  extension).
 
-Firefox 160 is not affected: its download item uses `crop="center"`, so the extension stays
-visible.
-
-## Affected code
-
-- `src/zen/library/sections/ZenLibraryDownloadsSection.mjs` — `#fileName()`, `#formatUrl()`
-- `src/zen/common/styles/zen-library-widget.css` — `text-overflow: ellipsis`
+Firefox 160 does not do this: its download item uses `crop="center"` and shows `Open File`
+on hover.
 
 ## Live demo
 
